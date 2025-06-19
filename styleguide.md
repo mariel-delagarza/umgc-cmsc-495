@@ -4,7 +4,7 @@
 <!-- To check a box, use an X: `[X]`-->
 <!-- Just delete anything we don't use-->
 
-# Phase I (6/24 - 7/9)
+# Phase I (6/24 - 7/6)
 
 ## UI Design
 ### Size and Layout
@@ -121,7 +121,7 @@
   - Quit:
   - Restart:
 
-# Phase 2 (7/9 - 7/22)
+# Phase 2 (7/7 - 7/22)
 
 ## Animation for ball colliding with bricks
 <!-- Any ideas or details -->
