@@ -90,8 +90,8 @@
 - Controls for movement (which keyboard keys):
   - Left:
   - Right: 
-  - Quit:
-  - Restart:
+  - Quit: "Q"
+  - Restart: "R"
 
 # Phase 2 (Start 7/9 *if* we're 100% done with all Phase 1 features)
 
