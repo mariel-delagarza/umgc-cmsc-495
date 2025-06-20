@@ -4,7 +4,7 @@
 <!-- To check a box, use an X: `[X]`-->
 <!-- Just delete anything we don't use-->
 
-# Phase I (6/24 - 7/9)
+# Phase I (6/24 - 7/6)
 
 ## UI Design
 ### Size and Layout
