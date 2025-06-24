@@ -9,119 +9,88 @@
 ## UI Design
 ### Size and Layout
 <!-- Sizes are all in pixels -->
-
 - Window size:
-  - Height:
-  - Width: 
-- Title text location (e.g. center of welcome screen): 
-- Credits location (e.g. under title):
+  - Height: 600
+  - Width: 550
+- Title text location: top of screen
+- Title and stats kept in a header 50-60px tall
+  - Border-bottom 3px solid white;
+- *Credits location (e.g. under title)*:
 - Welcome screen:
-  - [ ] Automatically fade to gameplay screen
-  - [ ] Instructions to press start  
+  - Instructions to press start: "Press any key to play"
+  - Change to gameplay when user hits a key to start
 - Stats used in Phase 1:
-  - [ ] Current score
-  - [ ] Number of lives
+  - Current score
+  - Number of lives
+  - Current level
 - Stats location:
-  - [ ] Top left
-  - [ ] Top right
-  - [ ] Both (score on one, lives on the other)
-- Game Over location:
-  - [ ] Overlay
-  - [ ] Separate game over screen 
-- Play again buttons (yes/no) size:
-  - Height:
-  - Width: 
-- Play again buttons location:
-  - [ ] Under "Play again?" text
-  - [ ] Other:
-- Play again buttons size:
-  - Height:
-  - Width:  
+  - Level: top left
+  - Lives and score: top right
+- Game Over is a seperate game screen 
+- No play again buttons, just text instructions
+  - Located at bottom of screen
+  - "Retry (R)"
+  - "Quit (Q)"
 - Paddle size: 
-  - Height:
-  - Width:
-- Ball size (radius):
+  - Height: 20
+  - Width: 100
+- Ball size (radius): 5
 - Brick size:
-  - Height:
-  - Width:
-  - Space between them:
-  - Distance from left wall:
-  - Distance from right wall:
-  - Starting distance from top wall:
-  - Starting distance from bottom:
+  - Height: 20
+  - Width: 40
+  - Space between them: 
+  - Distance from left wall: 5
+  - Distance from right wall: 5
+  - Starting distance from top wall: 5px under header border
+  - Starting distance from bottom: 50
 
 ### Content
-- Title:
+- Title: BREAKOUT
 - Credits:
-- Instructions to press start (if any):
+- Instructions to press start (if any): "PRESS ANY KEY TO PLAY"
 - Stats text:
-  - [ ] Score
-  - [ ] Current Score
-  - [ ] Number of lives
-  - [ ] Total lives
-  - [ ] Lives remaining
-  - [ ] Lives
-  - [ ] Other:
+  - "Score"
+  - "Lives"
+  - "Level"
 - Game Over text:
-  - [ ] Game over
-  - [ ] GAME OVER
-  - [ ] You lost!
-  - [ ] Other:
-- Play again text (with yes/no buttons underneath):
-  - [ ] Play again?
-  - [ ] Play again
-  - [ ] Try again?
-  - [ ] Try again
-  - [ ] Other:
-- Play again buttons:
-  - [ ] Yes (press `R`)
-  - [ ] No (press `Q`) 
-  - [ ] Other text:
-- Win text (with play again text + buttons underneath):
-  - [ ] You won!
-  - [ ] You win!
-  - [ ] Other:
+  - GAME OVER
+  - [tentative leaderboard]
+- No play again buttons, just text instructions
+  - Located at bottom of screen
+  - "Retry (R)"
+  - "Quit (Q)"
+- No win-condition text; a user continues until lives = 0. There's no "winning". 
 
 ### Fonts
-- Font for headings, title, Game Over:
-- Font for credits, 'play again?', and other small text:
-- Font for scoreboard/stats if different:
-- Font size for headings (in px):
-- Font size for other/body text (in px):
+- Font for everything: [Chakra Petch](https://fonts.google.com/specimen/Chakra+Petch?preview.text=PRESS+ANY+KEY+TO+PLAY)
+- Font size for headings (in px): 34px for h1, 32px for h2, 26 for h3
+- Font size for other/body text (in px): 16px
 
 ### Colors (pygame uses RGB)
-- Screen background colors:
-  - Welcome:
-  - Gameplay:  
-  - Game over (if any):
-- Text colors:
-  - Headings :
-  - Subtitles/other text:
-  - Stats/scoreboard (if different): 
-- Brick colors:
-  - If uniform: 
-  - If multicolor: 
-- Paddle color:
-- Ball color:
-- Stats/scoreboard color(s):
-- Buttons:
-  - Background:
-  - Text:
+- Screen background is always black: rgb(0,0,0)
+- All text is white: rgb(255,255,255)
+- Brick colors: 
+  - RED: rgb(232, 20, 5)
+  - YELLOW: rgb(232, 228, 5)
+  - GREEN: rgb(11, 230, 62)
+- Paddle color: rgb(34, 147, 240)
+- Ball color: white rgb(255,255,255)
 
 ## Gameplay
 - Maximum number of lives:
 - Base scoring:
-  - [ ] 1 point per brick
-  - [ ] Other: 
+  - Red bricks: 5 points
+  - Yellow bricks: 3 points
+  - Green bricks: 1 point
 - Ball speed:
 - Paddle speed:
 - Controls for movement (which keyboard keys):
   - Left:
   - Right: 
-  - Quit:
-  - Restart:
+  - Quit: "Q"
+  - Restart: "R"
 
-# Phase 2 (7/7 - 7/22)
+# Phase 2 (Start 7/9 *if* we're 100% done with all Phase 1 features)
 
 ## Animation for ball colliding with bricks
 <!-- Any ideas or details -->
@@ -160,3 +129,10 @@
 
 ## Local multiplyer mode
 <!-- Any ideas or details -->
+### Playing at the same time
+1. A paddle would be on each side of the screen with the bricks in a column in the middle. The users would take turns trying to hit the bricks. The user who hits the last brick wins.
+2. Split-window, with any win system (pong, score-based, who runs out of lives first)
+
+### Either playing at the same time or turn-based
+2. A pong-type game where the first person to miss first loses
+3. Score-based, whoever hits the most bricks wins.
