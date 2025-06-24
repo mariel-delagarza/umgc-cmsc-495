@@ -62,13 +62,9 @@
 - No win-condition text; a user continues until lives = 0. There's no "winning". 
 
 ### Fonts
-- Font for headings, title, Game Over: [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P)
-
-- [Options to fit a retro style can be found here](https://fonts.google.com/?preview.text=PRESS+ANY+KEY+TO+PLAY&categoryFilters=Appearance%3A%2FTheme%2FPixel)
-- Font for credits, 'play again?', and other small text:
-- Font for scoreboard/stats if different:
-- Font size for headings (in px):
-- Font size for other/body text (in px):
+- Font for everything: [Chakra Petch](https://fonts.google.com/specimen/Chakra+Petch?preview.text=PRESS+ANY+KEY+TO+PLAY)
+- Font size for headings (in px): 34px for h1, 32px for h2, 26 for h3
+- Font size for other/body text (in px): 16px
 
 ### Colors (pygame uses RGB)
 - Screen background is always black: rgb(0,0,0)
@@ -83,8 +79,9 @@
 ## Gameplay
 - Maximum number of lives:
 - Base scoring:
-  - [ ] 1 point per brick
-  - [ ] Other: 
+  - Red bricks: 5 points
+  - Yellow bricks: 3 points
+  - Green bricks: 1 point
 - Ball speed:
 - Paddle speed:
 - Controls for movement (which keyboard keys):
@@ -133,4 +130,9 @@
 ## Local multiplyer mode
 <!-- Any ideas or details -->
 ### Playing at the same time
-A paddle would be on each side of the screen with the bricks in a column in the middle. The users would take turns trying to hit the bricks. The user who hits the last brick wins.
+1. A paddle would be on each side of the screen with the bricks in a column in the middle. The users would take turns trying to hit the bricks. The user who hits the last brick wins.
+2. Split-window, with any win system (pong, score-based, who runs out of lives first)
+
+### Either playing at the same time or turn-based
+2. A pong-type game where the first person to miss first loses
+3. Score-based, whoever hits the most bricks wins.
