@@ -1,8 +1,8 @@
 """Breakout game main file: handles state switching, rendering, and input."""
-import sys
-import pygame
 from paddle import Paddle  # Import the Paddle class
 from ball import Ball
+import sys
+import pygame
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -84,13 +84,13 @@ while running:
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
                     current_state = GAME_OVER
+                    # (Optional) Add other key handling for GAME_OVER if needed
             if event.key == pygame.K_RETURN:
                 if current_state == GAMEPLAY:
                     ball_active = True
-
     screen.fill(BLACK)
 
-   # Handle continuous key presses for paddle movement
+    # Handle continuous key presses for paddle movement
     if current_state == GAMEPLAY:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
