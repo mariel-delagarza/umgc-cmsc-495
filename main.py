@@ -1,6 +1,7 @@
 """Breakout game main file: handles state switching, rendering, and input."""
 import sys
 import pygame
+from paddle import Paddle  # Import the Paddle class
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -41,6 +42,9 @@ FONT_SIZE_SCORE = 18
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Breakout Game")
 
+# Instantiate the paddle (for gameplay)
+paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE)
+
 # Font helper
 
 
@@ -71,10 +75,17 @@ while running:
             if event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
-                elif current_state == GAMEPLAY:
-                    current_state = GAME_OVER
+            # (Optional) Add other key handling for GAME_OVER if needed
 
     screen.fill(BLACK)
+
+    # Handle continuous key presses for paddle movement
+    if current_state == GAMEPLAY:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            paddle.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            paddle.move_right()
 
     # Render based on current state
     if current_state == WELCOME:
@@ -125,6 +136,9 @@ while running:
         # Placeholder instruction text
         render_text("PLACEHOLDER: PRESS SPACE TO SEE GAME OVER", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 2, UNDERLNE_Y + 20, bold=False)
+
+        # Draw the paddle
+        paddle.draw(screen)
     elif current_state == GAME_OVER:
         # White border
         pygame.draw.rect(screen, WHITE,
