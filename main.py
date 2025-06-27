@@ -2,6 +2,7 @@
 import sys
 import pygame
 from paddle import Paddle  # Import the Paddle class
+from ball import Ball
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -31,6 +32,7 @@ WELCOME = "welcome"
 GAMEPLAY = "gameplay"
 GAME_OVER = "game_over"
 current_state = WELCOME
+ball_active = False
 
 # Font sizes
 FONT_SIZE_TITLE = 40
@@ -75,7 +77,20 @@ while running:
             if event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
+<< << << < HEAD
             # (Optional) Add other key handling for GAME_OVER if needed
+== == == =
+                    # Ball creation
+                    game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
+                    game_ball.draw(screen)
+                    ball_active = False
+                elif current_state == GAMEPLAY:
+                    current_state = GAME_OVER
+            if event.key == pygame.K_RETURN:
+                if current_state == GAMEPLAY:
+                    ball_active = True                
+
+>>>>>>> 768447d (Added ball, its movement, and some collision logic)
 
     screen.fill(BLACK)
 
@@ -111,8 +126,8 @@ while running:
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
                           BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
-                         BORDER_THICKNESS)
-
+                         BORDER_THICKNESS)       
+        
         # UI Labels
         PADDING_TOP = 35
         PADDING_SIDE = 50
@@ -132,6 +147,12 @@ while running:
         UNDERLNE_Y = PADDING_TOP + 45
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
+        
+        #Ball tracking DEMO
+        if ball_active == True:
+            game_ball.move()
+            game_ball.bounce_walls(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
+        game_ball.draw(screen)
 
         # Placeholder instruction text
         render_text("PLACEHOLDER: PRESS SPACE TO SEE GAME OVER", FONT_SIZE_SUBTITLE, WHITE,
