@@ -63,6 +63,9 @@ def render_text(text, size, color, x, y, center=True, bold=False):
     screen.blit(rendered, rect)
 
 
+# Ball creation
+game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
+
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
 running = True
@@ -77,24 +80,17 @@ while running:
             if event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
-<< << << < HEAD
-            # (Optional) Add other key handling for GAME_OVER if needed
-== == == =
-                    # Ball creation
-                    game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
                     game_ball.draw(screen)
-                    ball_active = False
+                    ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
                     current_state = GAME_OVER
             if event.key == pygame.K_RETURN:
                 if current_state == GAMEPLAY:
-                    ball_active = True                
-
->>>>>>> 768447d (Added ball, its movement, and some collision logic)
+                    ball_active = True
 
     screen.fill(BLACK)
 
-    # Handle continuous key presses for paddle movement
+   # Handle continuous key presses for paddle movement
     if current_state == GAMEPLAY:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -126,8 +122,8 @@ while running:
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
                           BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
-                         BORDER_THICKNESS)       
-        
+                         BORDER_THICKNESS)
+
         # UI Labels
         PADDING_TOP = 35
         PADDING_SIDE = 50
@@ -147,11 +143,12 @@ while running:
         UNDERLNE_Y = PADDING_TOP + 45
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
-        
-        #Ball tracking DEMO
+
+        # Ball tracking DEMO
         if ball_active == True:
             game_ball.move()
-            game_ball.bounce_walls(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
+            game_ball.bounce_walls(
+                SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
         game_ball.draw(screen)
 
         # Placeholder instruction text
