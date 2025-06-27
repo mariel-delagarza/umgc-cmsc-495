@@ -84,10 +84,7 @@ while running:
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
                     current_state = GAME_OVER
-                    # (Optional) Add other key handling for GAME_OVER if needed
-            if event.key == pygame.K_RETURN:
-                if current_state == GAMEPLAY:
-                    ball_active = True
+                # (Optional) Add other key handling for GAME_OVER if needed
     screen.fill(BLACK)
 
     # Handle continuous key presses for paddle movement
