@@ -1,8 +1,8 @@
 """Breakout game main file: handles state switching, rendering, and input."""
-from paddle import Paddle  # Import the Paddle class
-from ball import Ball
 import sys
 import pygame
+from paddle import Paddle  # Import the Paddle class
+from ball import Ball
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -45,14 +45,18 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Breakout Game")
 
 # Instantiate the paddle (for gameplay)
-paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE)
+paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
+                BORDER_MARGIN, BORDER_THICKNESS)
 
 # Font helper
 
 
 def render_text(text, size, color, x, y, center=True, bold=False):
     """Render text on the screen with optional centering and bold styling."""
-    font_path = "assets/fonts/ChakraPetch-Bold.ttf" if bold else "assets/fonts/ChakraPetch-Regular.ttf"
+    font_path = (
+        "assets/fonts/ChakraPetch-Bold.ttf"
+        if bold else "assets/fonts/ChakraPetch-Regular.ttf"
+    )
     font = pygame.font.Font(font_path, size)
     rendered = font.render(text, True, color)
     rect = rendered.get_rect()
@@ -141,11 +145,12 @@ while running:
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
-        # Ball tracking DEMO
-        if ball_active == True:
+        # Ball tracking
+        if ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
+            game_ball.bounce_paddle(paddle.rect)
         game_ball.draw(screen)
 
         # Placeholder instruction text
