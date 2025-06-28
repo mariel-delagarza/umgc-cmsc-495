@@ -1,6 +1,7 @@
 """Breakout game main file: handles state switching, rendering, and input."""
 import sys
 import pygame
+from paddle import Paddle  # Import the Paddle class
 from ball import Ball
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
@@ -43,12 +44,19 @@ FONT_SIZE_SCORE = 18
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Breakout Game")
 
+# Instantiate the paddle (for gameplay)
+paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
+                BORDER_MARGIN, BORDER_THICKNESS)
+
 # Font helper
 
 
 def render_text(text, size, color, x, y, center=True, bold=False):
     """Render text on the screen with optional centering and bold styling."""
-    font_path = "assets/fonts/ChakraPetch-Bold.ttf" if bold else "assets/fonts/ChakraPetch-Regular.ttf"
+    font_path = (
+        "assets/fonts/ChakraPetch-Bold.ttf"
+        if bold else "assets/fonts/ChakraPetch-Regular.ttf"
+    )
     font = pygame.font.Font(font_path, size)
     rendered = font.render(text, True, color)
     rect = rendered.get_rect()
@@ -61,7 +69,6 @@ def render_text(text, size, color, x, y, center=True, bold=False):
 
 # Ball creation
 game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
-
 
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
@@ -81,11 +88,16 @@ while running:
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
                     current_state = GAME_OVER
-            if event.key == pygame.K_RETURN:
-                if current_state == GAMEPLAY:
-                    ball_active = True
-
+                # (Optional) Add other key handling for GAME_OVER if needed
     screen.fill(BLACK)
+
+    # Handle continuous key presses for paddle movement
+    if current_state == GAMEPLAY:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            paddle.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            paddle.move_right()
 
     # Render based on current state
     if current_state == WELCOME:
@@ -133,16 +145,20 @@ while running:
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
-        # Ball tracking DEMO
-        if ball_active == True:
+        # Ball tracking
+        if ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
+            game_ball.bounce_paddle(paddle.rect)
         game_ball.draw(screen)
 
         # Placeholder instruction text
         render_text("PLACEHOLDER: PRESS SPACE TO SEE GAME OVER", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 2, UNDERLNE_Y + 20, bold=False)
+
+        # Draw the paddle
+        paddle.draw(screen)
     elif current_state == GAME_OVER:
         # White border
         pygame.draw.rect(screen, WHITE,
