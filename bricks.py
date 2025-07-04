@@ -7,8 +7,8 @@ BRICK_HEIGHT = 20
 
 # Space between each brick and padding from screen edges
 BRICK_SPACING = 5
-BRICK_PADDING_LEFT = 5
-BRICK_PADDING_TOP = 65  # Starts (5px below the 60px header)
+BRICK_PADDING_LEFT = 30
+BRICK_PADDING_TOP = 90
 
 # List of brick colors and their scores
 brick_colors = [
