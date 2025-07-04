@@ -3,6 +3,7 @@ import sys
 import pygame
 from paddle import Paddle  # Import the Paddle class
 from ball import Ball
+from bricks import create_brick_grid, handle_ball_brick_collision  # Import the bricks class
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -70,6 +71,12 @@ def render_text(text, size, color, x, y, center=True, bold=False):
 # Ball creation
 game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
 
+# Create bricks
+brick_group = create_brick_grid(SCREEN_WIDTH)
+
+# Initialize score variable
+score = 0
+
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
 running = True
@@ -125,6 +132,9 @@ while running:
                           BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
                          BORDER_THICKNESS)
 
+        # Draw all the bricks on the screen
+        brick_group.draw(screen)
+
         # UI Labels
         PADDING_TOP = 35
         PADDING_SIDE = 50
@@ -137,7 +147,7 @@ while running:
         RIGHT_X = SCREEN_WIDTH - PADDING_SIDE - 120
         render_text("LIVES", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP, center=False, bold=True)
-        render_text("SCORE", FONT_SIZE_SCORE, WHITE, RIGHT_X,
+        render_text(f"SCORE: {score}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP + 20, center=False, bold=True)
 
         # Horizontal underline (2px height)
@@ -151,6 +161,10 @@ while running:
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
             game_ball.bounce_paddle(paddle.rect)
+
+            # Check if the ball hit any bricks
+            score = handle_ball_brick_collision(game_ball, brick_group, score)
+
         game_ball.draw(screen)
 
         # Placeholder instruction text
