@@ -2,8 +2,9 @@
 import sys
 import pygame
 from paddle import Paddle  # Import the Paddle class
-from ball import Ball
-from bricks import create_brick_grid, handle_ball_brick_collision  # Import the bricks class
+from ball import Ball  # Import the Ball class
+# Import the Bricks class
+from bricks import create_brick_grid, handle_ball_brick_collision
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
