@@ -5,6 +5,8 @@ Handles ball rendering, movement, and collision with walls and the paddle.
 
 import pygame
 
+# pylint: disable=no-member, invalid-name
+
 
 class Ball:
     """
@@ -13,6 +15,8 @@ class Ball:
     # can remove speed_x values for adding difficulties later on.
 
     def __init__(self, screen_width, screen_height, speed_x=-3, speed_y=-4):
+        super().__init__()
+
         """
         Initialize the ball at the center of the screen with specified speed and radius.
 
@@ -29,6 +33,17 @@ class Ball:
         self.speed_y = speed_y
         self.color = (255, 255, 255)
         self.bottom_hit = False
+
+        # Make a small surface to show the ball (needed for Pygame sprites)
+        self.image = pygame.Surface(
+            (self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+
+        # Draw the ball as a white circle on that surface
+        pygame.draw.circle(self.image, self.color,
+                           (self.radius, self.radius), self.radius)
+
+        # Create a rectangle used for collision detection
+        self.rect = self.image.get_rect(center=(self.x, self.y))
 
     # For drawing loop
     def draw(self, screen):
@@ -56,8 +71,11 @@ class Ball:
         """
         Update the ball’s position based on its current velocity.
         """
-        self.x += self.speed_x
-        self.y += self.speed_y
+        self.x += self.speed_x  # Move left/right
+        self.y += self.speed_y  # Move up/down
+
+        # Update the collision box to match the new position
+        self.rect.center = (self.x, self.y)
 
     def bounce_walls(
             self,
@@ -65,7 +83,7 @@ class Ball:
             screen_height,
             border_margin,
             border_thickness,
-            padding_side):
+            padding_top):
         """
         Handle collision with screen walls and reverse direction as needed.
 
@@ -74,12 +92,12 @@ class Ball:
             screen_height (int): Height of the screen.
             border_margin (int): Margin around the screen.
             border_thickness (int): Thickness of the screen border.
-            padding_side (int): Padding below the top border (e.g. for UI labels).
+            padding_top (int): Padding below the top border (e.g. for UI labels).
         """
         # Bounds for collision
         left_bound = border_margin + border_thickness
         right_bound = screen_width - border_thickness - border_margin
-        top_bound = border_margin + border_thickness + padding_side
+        top_bound = border_margin + border_thickness + padding_top
         # Demo purposes
         bottom_bound = screen_height - border_thickness - border_margin
 
@@ -94,16 +112,6 @@ class Ball:
             # Debug for flag
             print(self.bottom_hit)
 
-    def rect(self):
-        """
-        Return a pygame.Rect representing the ball’s bounding box.
-
-        Returns:
-            pygame.Rect: Rect surrounding the ball.
-        """
-        return pygame.Rect(self.x - self.radius, self.y - self.radius,
-                           self.radius * 2, self.radius * 2)
-
     def bounce_paddle(self, paddle_rect):
         """
         Bounce off the paddle, reversing vertical direction and 
@@ -112,7 +120,7 @@ class Ball:
         Args:
             paddle_rect (pygame.Rect): Rect of the paddle to check for collision.
         """
-        if self.rect().colliderect(paddle_rect):
+        if self.rect.colliderect(paddle_rect):
             # Calculate the hit position on the paddle
             ball_center = self.x
             paddle_center = paddle_rect.centerx
