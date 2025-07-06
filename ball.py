@@ -106,11 +106,9 @@ class Ball:
             self.speed_x *= -1
         if self.y - self.radius <= top_bound:
             self.speed_y *= -1
-        if self.y + self.radius >= bottom_bound:
-            self.speed_y *= -1
+        if self.y + self.radius >= bottom_bound:            
             self.bottom_hit = True
-            # Debug for flag
-            print(self.bottom_hit)
+            
 
     def bounce_paddle(self, paddle_rect):
         """

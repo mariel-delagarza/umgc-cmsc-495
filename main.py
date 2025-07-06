@@ -114,6 +114,8 @@ while running:
 
                 brick_group.empty()
                 brick_group = create_brick_grid(SCREEN_WIDTH)
+            elif event.key == pygame.K_q and current_state == GAME_OVER:                
+                running = False
 
 
     # (Optional) Add other key handling for GAME_OVER if needed
@@ -172,7 +174,7 @@ while running:
 
         # Top-right: LIVES + SCORE
         RIGHT_X = SCREEN_WIDTH - PADDING_SIDE - 120
-        render_text("LIVES", FONT_SIZE_SCORE, WHITE, RIGHT_X,
+        render_text(f"LIVES: {lives}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP, center=False, bold=True)
         render_text(f"SCORE: {score}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP + 20, center=False, bold=True)
@@ -192,6 +194,17 @@ while running:
             # Check if the ball hit any bricks
             score = handle_ball_brick_collision(game_ball, brick_group, score)
 
+            # Life update
+            if game_ball.bottom_hit:
+                lives -= 1                
+                ball_active = True
+                game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
+                game_ball.bottom_hit = False
+                if lives > 0:
+                    paused = True
+                if lives <= 0:
+                    current_state = GAME_OVER
+
         game_ball.draw(screen)
 
         # Placeholder instruction text
@@ -201,7 +214,7 @@ while running:
         # Draw the paddle
         paddle.draw(screen)
     elif current_state == GAME_OVER:
-        # White border
+        # White border        
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
                           BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
