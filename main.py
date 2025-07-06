@@ -77,10 +77,12 @@ brick_group = create_brick_grid(SCREEN_WIDTH)
 
 # Initialize score variable
 score = 0
+lives = 3
 
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
 running = True
+paused = False
 
 while running:
     for event in pygame.event.get():
@@ -89,23 +91,47 @@ while running:
 
         # Change state on key press
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            # Pause Checks
+            if event.key == pygame.K_p and current_state == GAMEPLAY:
+                paused = not paused
+            elif event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
                     game_ball.draw(screen)
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
                     current_state = GAME_OVER
-                # (Optional) Add other key handling for GAME_OVER if needed
+            # Restart during Game Over
+            elif event.key == pygame.K_r and current_state == GAME_OVER:
+                score = 0
+                lives = 3
+                paused = True
+                ball_active = True
+                current_state = GAMEPLAY
+                paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
+                BORDER_MARGIN, BORDER_THICKNESS)
+                game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+                brick_group.empty()
+                brick_group = create_brick_grid(SCREEN_WIDTH)
+
+
+    # (Optional) Add other key handling for GAME_OVER if needed
+
     screen.fill(BLACK)
 
+    # Render based on paused status
+    if paused:
+        render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
     # Handle continuous key presses for paddle movement
-    if current_state == GAMEPLAY:
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            paddle.move_right()
+    if not paused:        
+        if current_state == GAMEPLAY:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                paddle.move_left()
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                paddle.move_right()
 
     # Render based on current state
     if current_state == WELCOME:
@@ -157,7 +183,7 @@ while running:
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
         # Ball tracking
-        if ball_active:
+        if not paused and ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
