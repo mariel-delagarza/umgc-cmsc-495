@@ -142,17 +142,20 @@ while running:
         # Subtitle
         render_text("Press SPACE to Start", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20)
+
+        render_text("Press 'P' to Pause/Unpause", FONT_SIZE_SUBTITLE, WHITE,
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 2)
         # Credits
         render_text("CMSC495-6981 Group 3", FONT_SIZE_CREDITS, WHITE,
-                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
-        render_text("By Rebecca Allen, Tej Charfi, Mariel de la Garza,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 60)
-        render_text("Robel Girma, Veronica Hercules Villeda,", FONT_SIZE_CREDITS, WHITE,
+        render_text("By Rebecca Allen, Tej Charfi, Mariel de la Garza,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80)
-        render_text("William Hoover, Paige Ratliff-Jackson,", FONT_SIZE_CREDITS, WHITE,
+        render_text("Robel Girma, Veronica Hercules Villeda,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
-        render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
+        render_text("William Hoover, Paige Ratliff-Jackson,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120)
+        render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 140)
     elif current_state == GAMEPLAY:
         # White border
         pygame.draw.rect(screen, WHITE,
