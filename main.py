@@ -33,6 +33,7 @@ BLUE = (34, 147, 240)  # for the paddle
 WELCOME = "welcome"
 GAMEPLAY = "gameplay"
 GAME_OVER = "game_over"
+LIFE_LOST = "life_lost"
 current_state = WELCOME
 ball_active = False
 
@@ -92,21 +93,26 @@ while running:
         # Change state on key press
         if event.type == pygame.KEYDOWN:
             # Pause Checks
-            if event.key == pygame.K_p and current_state == GAMEPLAY:
+            if event.key == pygame.K_p and current_state == GAMEPLAY and ball_active:
                 paused = not paused
+            # Restart after life lost
+            elif event.key == pygame.K_SPACE and current_state == LIFE_LOST:
+                current_state = GAMEPLAY
+                paused = False  # unpause when resuming
+                ball_active = True
             elif event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
                     game_ball.draw(screen)
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
-                    current_state = GAME_OVER
+                    ball_active = True
             # Restart during Game Over
             elif event.key == pygame.K_r and current_state == GAME_OVER:
                 score = 0
                 lives = 3
-                paused = True
-                ball_active = True
+                paused = False  # no longer paused
+                ball_active = False  # wait for user to start
                 current_state = GAMEPLAY
                 paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
                                 BORDER_MARGIN, BORDER_THICKNESS)
@@ -122,9 +128,15 @@ while running:
     screen.fill(BLACK)
 
     # Render based on paused status
-    if current_state == GAMEPLAY and paused:
-        render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
-                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
+    if current_state == GAMEPLAY:
+        if not ball_active:
+            render_text("PRESS SPACE TO START", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2-40, bold=True)
+            render_text("PRESS 'P' TO PAUSE/UNPAUSE", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        elif paused:
+            render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
     # Handle continuous key presses for paddle movement
     if not paused:
         if current_state == GAMEPLAY:
@@ -156,7 +168,7 @@ while running:
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120)
         render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 140)
-    elif current_state == GAMEPLAY:
+    elif current_state in (GAMEPLAY, LIFE_LOST):
         # White border
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
@@ -187,7 +199,7 @@ while running:
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
         # Ball tracking
-        if not paused and ball_active:
+        if current_state == GAMEPLAY and not paused and ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
@@ -199,19 +211,23 @@ while running:
             # Life update
             if game_ball.bottom_hit:
                 lives -= 1
-                ball_active = True
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
                 game_ball.bottom_hit = False
                 if lives > 0:
-                    paused = True
+                    current_state = LIFE_LOST
+                    paused = False  # don't move until user resumes
                 if lives <= 0:
                     current_state = GAME_OVER
 
         game_ball.draw(screen)
 
-        # Placeholder instruction text
-        render_text("PLACEHOLDER: PRESS SPACE TO SEE GAME OVER", FONT_SIZE_SUBTITLE, WHITE,
-                    SCREEN_WIDTH // 2, UNDERLNE_Y + 20, bold=False)
+        if current_state == LIFE_LOST:
+            render_text("LIFE LOST", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40, bold=True)
+            render_text(f"LIVES REMAINING: {lives}", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            render_text("PRESS SPACE TO START", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
 
         # Draw the paddle
         paddle.draw(screen)
