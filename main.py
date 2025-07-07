@@ -109,14 +109,13 @@ while running:
                 ball_active = True
                 current_state = GAMEPLAY
                 paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
-                BORDER_MARGIN, BORDER_THICKNESS)
+                                BORDER_MARGIN, BORDER_THICKNESS)
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
 
                 brick_group.empty()
                 brick_group = create_brick_grid(SCREEN_WIDTH)
-            elif event.key == pygame.K_q and current_state == GAME_OVER:                
+            elif event.key == pygame.K_q and current_state == GAME_OVER:
                 running = False
-
 
     # (Optional) Add other key handling for GAME_OVER if needed
 
@@ -127,7 +126,7 @@ while running:
         render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
     # Handle continuous key presses for paddle movement
-    if not paused:        
+    if not paused:
         if current_state == GAMEPLAY:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -196,7 +195,7 @@ while running:
 
             # Life update
             if game_ball.bottom_hit:
-                lives -= 1                
+                lives -= 1
                 ball_active = True
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
                 game_ball.bottom_hit = False
@@ -214,7 +213,7 @@ while running:
         # Draw the paddle
         paddle.draw(screen)
     elif current_state == GAME_OVER:
-        # White border        
+        # White border
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
                           BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
