@@ -33,6 +33,7 @@ BLUE = (34, 147, 240)  # for the paddle
 WELCOME = "welcome"
 GAMEPLAY = "gameplay"
 GAME_OVER = "game_over"
+LIFE_LOST = "life_lost"
 current_state = WELCOME
 ball_active = False
 
@@ -77,10 +78,12 @@ brick_group = create_brick_grid(SCREEN_WIDTH)
 
 # Initialize score variable
 score = 0
+lives = 3
 
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
 running = True
+paused = False
 
 while running:
     for event in pygame.event.get():
@@ -89,23 +92,59 @@ while running:
 
         # Change state on key press
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            # Pause Checks
+            if event.key == pygame.K_p and current_state == GAMEPLAY and ball_active:
+                paused = not paused
+            # Restart after life lost
+            elif event.key == pygame.K_SPACE and current_state == LIFE_LOST:
+                current_state = GAMEPLAY
+                paused = False  # unpause when resuming
+                ball_active = True
+            elif event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
                     current_state = GAMEPLAY
                     game_ball.draw(screen)
                     ball_active = True  # start moving on gameplay load
                 elif current_state == GAMEPLAY:
-                    current_state = GAME_OVER
-                # (Optional) Add other key handling for GAME_OVER if needed
+                    ball_active = True
+            # Restart during Game Over
+            elif event.key == pygame.K_r and current_state == GAME_OVER:
+                score = 0
+                lives = 3
+                paused = False  # no longer paused
+                ball_active = False  # wait for user to start
+                current_state = GAMEPLAY
+                paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
+                                BORDER_MARGIN, BORDER_THICKNESS)
+                game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+                brick_group.empty()
+                brick_group = create_brick_grid(SCREEN_WIDTH)
+            elif event.key == pygame.K_q and current_state == GAME_OVER:
+                running = False
+
+    # (Optional) Add other key handling for GAME_OVER if needed
+
     screen.fill(BLACK)
 
-    # Handle continuous key presses for paddle movement
+    # Render based on paused status
     if current_state == GAMEPLAY:
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            paddle.move_right()
+        if not ball_active:
+            render_text("PRESS SPACE TO START", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2-40, bold=True)
+            render_text("PRESS 'P' TO PAUSE/UNPAUSE", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        elif paused:
+            render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
+    # Handle continuous key presses for paddle movement
+    if not paused:
+        if current_state == GAMEPLAY:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                paddle.move_left()
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                paddle.move_right()
 
     # Render based on current state
     if current_state == WELCOME:
@@ -115,18 +154,21 @@ while running:
         # Subtitle
         render_text("Press SPACE to Start", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20)
+
+        render_text("Press 'P' to Pause/Unpause", FONT_SIZE_SUBTITLE, WHITE,
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 2)
         # Credits
         render_text("CMSC495-6981 Group 3", FONT_SIZE_CREDITS, WHITE,
-                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
-        render_text("By Rebecca Allen, Tej Charfi, Mariel de la Garza,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 60)
-        render_text("Robel Girma, Veronica Hercules Villeda,", FONT_SIZE_CREDITS, WHITE,
+        render_text("By Rebecca Allen, Tej Charfi, Mariel de la Garza,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80)
-        render_text("William Hoover, Paige Ratliff-Jackson,", FONT_SIZE_CREDITS, WHITE,
+        render_text("Robel Girma, Veronica Hercules Villeda,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100)
-        render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
+        render_text("William Hoover, Paige Ratliff-Jackson,", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120)
-    elif current_state == GAMEPLAY:
+        render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 140)
+    elif current_state in (GAMEPLAY, LIFE_LOST):
         # White border
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
@@ -146,7 +188,7 @@ while running:
 
         # Top-right: LIVES + SCORE
         RIGHT_X = SCREEN_WIDTH - PADDING_SIDE - 120
-        render_text("LIVES", FONT_SIZE_SCORE, WHITE, RIGHT_X,
+        render_text(f"LIVES: {lives}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP, center=False, bold=True)
         render_text(f"SCORE: {score}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP + 20, center=False, bold=True)
@@ -157,7 +199,7 @@ while running:
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
         # Ball tracking
-        if ball_active:
+        if current_state == GAMEPLAY and not paused and ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
@@ -166,11 +208,26 @@ while running:
             # Check if the ball hit any bricks
             score = handle_ball_brick_collision(game_ball, brick_group, score)
 
+            # Life update
+            if game_ball.bottom_hit:
+                lives -= 1
+                game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
+                game_ball.bottom_hit = False
+                if lives > 0:
+                    current_state = LIFE_LOST
+                    paused = False  # don't move until user resumes
+                if lives <= 0:
+                    current_state = GAME_OVER
+
         game_ball.draw(screen)
 
-        # Placeholder instruction text
-        render_text("PLACEHOLDER: PRESS SPACE TO SEE GAME OVER", FONT_SIZE_SUBTITLE, WHITE,
-                    SCREEN_WIDTH // 2, UNDERLNE_Y + 20, bold=False)
+        if current_state == LIFE_LOST:
+            render_text("LIFE LOST", FONT_SIZE_TITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 40, bold=True)
+            render_text(f"LIVES REMAINING: {lives}", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            render_text("PRESS SPACE TO START", FONT_SIZE_SUBTITLE, WHITE,
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)
 
         # Draw the paddle
         paddle.draw(screen)

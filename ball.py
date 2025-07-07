@@ -15,8 +15,6 @@ class Ball:
     # can remove speed_x values for adding difficulties later on.
 
     def __init__(self, screen_width, screen_height, speed_x=-3, speed_y=-4):
-        super().__init__()
-
         """
         Initialize the ball at the center of the screen with specified speed and radius.
 
@@ -26,6 +24,8 @@ class Ball:
             speed_x (int, optional): Initial horizontal speed. Defaults to -3.
             speed_y (int, optional): Initial vertical speed. Defaults to -4.
         """
+        super().__init__()
+
         self.radius = 5
         self.x = int(screen_width // 2)
         self.y = int(screen_height // 1.5)
@@ -66,6 +66,7 @@ class Ball:
         """
         self.x = screen_width // 2
         self.y = screen_height // 1.5
+        self.speed_y = -abs(self.speed_y)  # ensure it's going up
 
     def move(self):
         """
@@ -107,10 +108,7 @@ class Ball:
         if self.y - self.radius <= top_bound:
             self.speed_y *= -1
         if self.y + self.radius >= bottom_bound:
-            self.speed_y *= -1
             self.bottom_hit = True
-            # Debug for flag
-            print(self.bottom_hit)
 
     def bounce_paddle(self, paddle_rect):
         """
