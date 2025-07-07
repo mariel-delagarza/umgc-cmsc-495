@@ -66,6 +66,7 @@ class Ball:
         """
         self.x = screen_width // 2
         self.y = screen_height // 1.5
+        self.speed_y = -abs(self.speed_y)  # ensure it's going up
 
     def move(self):
         """

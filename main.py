@@ -122,7 +122,7 @@ while running:
     screen.fill(BLACK)
 
     # Render based on paused status
-    if paused:
+    if current_state == GAMEPLAY and paused:
         render_text("(P)AUSED", FONT_SIZE_TITLE, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, bold=True)
     # Handle continuous key presses for paddle movement
