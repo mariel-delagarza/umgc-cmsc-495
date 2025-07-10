@@ -7,16 +7,17 @@ import pygame
 
 # pylint: disable=no-member, invalid-name
 
-
 class Ball:
     """
-    Ball object that moves around the screen, bounces off walls, and interacts with the paddle.
+    Ball object with trail that moves around the screen, bounces off walls, and interacts
+    with the paddle.
     """
     # can remove speed_x values for adding difficulties later on.
 
     def __init__(self, screen_width, screen_height, speed_x=-3, speed_y=-4):
         """
         Initialize the ball at the center of the screen with specified speed and radius.
+        A trail will be generated behind the ball to show momentum.
 
         Args:
             screen_width (int): Width of the game screen.
@@ -33,6 +34,8 @@ class Ball:
         self.speed_y = speed_y
         self.color = (255, 255, 255)
         self.bottom_hit = False
+        self.trail = []
+        self.trail_length = 4
 
         # Make a small surface to show the ball (needed for Pygame sprites)
         self.image = pygame.Surface(
@@ -54,6 +57,14 @@ class Ball:
             screen (pygame.Surface): The surface to draw on.
         """
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+
+        # Draw tail with decreasing opacity
+        for i, (tx, ty) in enumerate(self.trail):
+            alpha = int(255 * (i + 1) / self.trail_length)  # Fade from faint to full
+            trail_color = (255, 255, 255, alpha)
+            trail_surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(trail_surface, trail_color, (self.radius, self.radius), self.radius)
+            screen.blit(trail_surface, (tx - self.radius, ty - self.radius))
 
     # For when paddle misses the ball, or game is restarted.
     def restart(self, screen_width, screen_height):
@@ -77,6 +88,13 @@ class Ball:
 
         # Update the collision box to match the new position
         self.rect.center = (self.x, self.y)
+
+        # Add current position to trail
+        self.trail.append((self.x, self.y))
+
+        # Limit trail length
+        if len(self.trail) > self.trail_length:
+            self.trail.pop(0)
 
     def bounce_walls(
             self,
@@ -102,7 +120,7 @@ class Ball:
         # Demo purposes
         bottom_bound = screen_height - border_thickness - border_margin
 
-        # Actual collsion checking
+        # Collision checking
         if self.x - self.radius <= left_bound or self.x + self.radius >= right_bound:
             self.speed_x *= -1
         if self.y - self.radius <= top_bound:
@@ -110,13 +128,14 @@ class Ball:
         if self.y + self.radius >= bottom_bound:
             self.bottom_hit = True
 
-    def bounce_paddle(self, paddle_rect):
+    def bounce_paddle(self, paddle_rect, paddle_hop):
         """
-        Bounce off the paddle, reversing vertical direction and 
+        Bounce off the paddle, reversing vertical direction and
         tweaking horizontal based on hit location.
 
         Args:
             paddle_rect (pygame.Rect): Rect of the paddle to check for collision.
+            paddle_hop (paddle_hop.start_shake)
         """
         if self.rect.colliderect(paddle_rect):
             # Calculate the hit position on the paddle
@@ -133,3 +152,6 @@ class Ball:
             elif ball_center > paddle_center + 20:
                 self.speed_x = abs(self.speed_x)  # ensure it's going right
             # Else: center hit → don't adjust X
+
+            # Trigger the paddle shake
+            paddle_hop.shake()
