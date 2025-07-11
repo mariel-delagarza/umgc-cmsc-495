@@ -53,7 +53,6 @@ paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
 
 # Font helper
 
-
 def render_text(text, size, color, x, y, center=True, bold=False):
     """Render text on the screen with optional centering and bold styling."""
     font_path = (
@@ -68,7 +67,6 @@ def render_text(text, size, color, x, y, center=True, bold=False):
     else:
         rect.topleft = (x, y)
     screen.blit(rendered, rect)
-
 
 # Ball creation
 game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -176,7 +174,12 @@ while running:
                          BORDER_THICKNESS)
 
         # Draw all the bricks on the screen
+        brick_group.update()
         brick_group.draw(screen)
+
+        # Draw brick particles
+        for brick in brick_group:
+            brick.draw_particles(screen)
 
         # UI Labels
         PADDING_TOP = 35
@@ -198,12 +201,11 @@ while running:
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
                          (SCREEN_WIDTH - 30, UNDERLNE_Y), 2)
 
-        # Ball tracking
         if current_state == GAMEPLAY and not paused and ball_active:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
-            game_ball.bounce_paddle(paddle.rect)
+            game_ball.bounce_paddle(paddle.rect, paddle)
 
             # Check if the ball hit any bricks
             score = handle_ball_brick_collision(game_ball, brick_group, score)
@@ -231,6 +233,7 @@ while running:
 
         # Draw the paddle
         paddle.draw(screen)
+
     elif current_state == GAME_OVER:
         # White border
         pygame.draw.rect(screen, WHITE,
