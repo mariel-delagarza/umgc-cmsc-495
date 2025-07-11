@@ -5,7 +5,6 @@ Handles paddle rendering, movement, and edge constraints.
 
 import pygame
 
-
 class Paddle:
     """
     Paddle controlled by the user. Handles drawing, movement, and boundary checking.
@@ -15,10 +14,11 @@ class Paddle:
         self,
         screen_width,
         screen_height,
-        color=(34, 147, 240),
-        border_margin=0,
-        border_thickness=0
+        color = (34, 147, 240),
+        border_margin = 0,
+        border_thickness = 0
     ):
+
         """
         Initialize the Paddle with size, position, and movement limits.
         """
@@ -37,6 +37,8 @@ class Paddle:
         self.screen_width = screen_width
         self.border_margin = border_margin
         self.border_thickness = border_thickness
+        self.shake_frames = 0
+        self.shake_offset_y = 0
 
     def move_left(self):
         """
@@ -54,8 +56,22 @@ class Paddle:
             self.border_thickness - self.width
         self.rect.x = min(right_limit, self.rect.x + self.speed)
 
+    def shake(self):
+        """
+        Generates  a vertical shake effect.
+        """
+        self.shake_frames = 5
+
     def draw(self, surface):
         """
-        Draw the paddle on the provided surface.
+        Draw the paddle on the provided surface with shake when collided.
         """
-        pygame.draw.rect(surface, self.color, self.rect)
+        if self.shake_frames > 0:
+            self.shake_offset_y = 3
+            self.shake_frames -= 1
+        else:
+            self.shake_offset_y = 0
+
+        # Create a temporary rect with the vertical offset
+        shaken_rect = self.rect.move(0, self.shake_offset_y)
+        pygame.draw.rect(surface, self.color, shaken_rect)
