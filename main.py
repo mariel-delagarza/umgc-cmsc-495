@@ -5,6 +5,7 @@ from paddle import Paddle  # Import the Paddle class
 from ball import Ball  # Import the Ball class
 # Import the Bricks class
 from bricks import create_brick_grid, handle_ball_brick_collision
+from scoreboard import Scoreboard # Import the scoreboard class
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -26,7 +27,7 @@ WHITE = (255, 255, 255)  # for the text and ball
 BLACK = (0, 0, 0)  # for the background
 RED = (232, 20, 5)  # for the bricks
 YELLOW = (232, 228, 5)  # for the bricks
-GREEN = (11, 320, 62)  # for the bricks
+GREEN = (11, 230, 62)  # for the bricks
 BLUE = (34, 147, 240)  # for the paddle
 
 # Game states
@@ -35,7 +36,13 @@ GAMEPLAY = "gameplay"
 GAME_OVER = "game_over"
 LIFE_LOST = "life_lost"
 current_state = WELCOME
+
+# Game state variables
 ball_active = False
+initials_entered = False
+player_initials = ""
+input_active = False
+initials_ready = False
 
 # Font sizes
 FONT_SIZE_TITLE = 40
@@ -51,8 +58,10 @@ pygame.display.set_caption("Breakout Game")
 paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
                 BORDER_MARGIN, BORDER_THICKNESS)
 
-# Font helper
+# Instantiate scoreboard
+scoreboard = Scoreboard(SCREEN_WIDTH,SCREEN_HEIGHT)
 
+# Font helper
 def render_text(text, size, color, x, y, center=True, bold=False):
     """Render text on the screen with optional centering and bold styling."""
     font_path = (
@@ -88,6 +97,21 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        # This is placed here to prevent p & q from messing with initials
+        if input_active and current_state == GAME_OVER:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE: # Backspace to remove letter
+                    player_initials = player_initials[:-1]
+                elif event.unicode.isalpha() and len(player_initials) < 3: # Allow typing of letters
+                    player_initials += event.unicode.upper()
+                    initials_ready = len(player_initials) == 3
+                    # Automatically save when length reaches 3
+                    if initials_ready:
+                        scoreboard.save_score(score, player_initials)
+                        input_active = False
+                        initials_entered = True
+            continue # Needed to allow for Q and R to work
+
         # Change state on key press
         if event.type == pygame.KEYDOWN:
             # Pause Checks
@@ -111,15 +135,23 @@ while running:
                 lives = 3
                 paused = False  # no longer paused
                 ball_active = False  # wait for user to start
+                initials_entered = False
+                input_active = False
                 current_state = GAMEPLAY
                 paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
                                 BORDER_MARGIN, BORDER_THICKNESS)
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
-
                 brick_group.empty()
                 brick_group = create_brick_grid(SCREEN_WIDTH)
             elif event.key == pygame.K_q and current_state == GAME_OVER:
                 running = False
+
+    # If score doesn't reach top 10, it will skip initial inputs
+    if input_active and current_state == GAME_OVER:
+        if scoreboard.top_scores(score):
+            input_active = True
+        else:
+            input_active = False
 
     # (Optional) Add other key handling for GAME_OVER if needed
 
@@ -166,6 +198,7 @@ while running:
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120)
         render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 140)
+
     elif current_state in (GAMEPLAY, LIFE_LOST):
         # White border
         pygame.draw.rect(screen, WHITE,
@@ -218,8 +251,17 @@ while running:
                 if lives > 0:
                     current_state = LIFE_LOST
                     paused = False  # don't move until user resumes
-                if lives <= 0:
+                elif lives <= 0:
                     current_state = GAME_OVER
+                    initials_entered = False
+                    player_initials = ""
+
+                    # Only activate input if score qualifies
+                    if scoreboard.top_scores(score):
+                        scoreboard.new_initials(score)
+                        input_active = True
+                    else:
+                        input_active = False
 
         game_ball.draw(screen)
 
@@ -235,11 +277,11 @@ while running:
         paddle.draw(screen)
 
     elif current_state == GAME_OVER:
-        # White border
         pygame.draw.rect(screen, WHITE,
                          (BORDER_MARGIN, BORDER_MARGIN, SCREEN_WIDTH - 2 *
-                          BORDER_MARGIN, SCREEN_HEIGHT - 2*BORDER_MARGIN),
+                          BORDER_MARGIN, SCREEN_HEIGHT - 2 * BORDER_MARGIN),
                          BORDER_THICKNESS)
+
         # Title
         render_text("GAME OVER", FONT_SIZE_TITLE, WHITE,
                     SCREEN_WIDTH // 2, BORDER_MARGIN + 30, bold=True)
@@ -249,48 +291,19 @@ while running:
         pygame.draw.line(screen, WHITE, (30, underline_y),
                          (SCREEN_WIDTH - 30, underline_y), 2)
 
-        # Leaderboard header
-        render_text("LEADERBOARD", FONT_SIZE_SUBTITLE, WHITE,
-                    SCREEN_WIDTH // 2, underline_y + 30, bold=True)
-
-        # Table columns
-        row_y_start = underline_y + 100
-        ROW_SPACING = 25
-
-        # Define x positions for columns
-        X_RANK = SCREEN_WIDTH // 2 - 100
-        X_SCORE = SCREEN_WIDTH // 2
-        X_NAME = SCREEN_WIDTH // 2 + 100
-
-        leaderboard = [
-            ("1ST", "20", "PBC"),
-            ("2ND", "10", "GWZ"),
-            ("3RD", "3", "AAA")
-        ]
-
-        # Column headers
-        column_y = row_y_start - ROW_SPACING  # one row height above the first row
-        render_text("SCORE", FONT_SIZE_CREDITS, WHITE,
-                    X_SCORE, column_y, center=True, bold=True)
-        render_text("NAME", FONT_SIZE_CREDITS, WHITE,
-                    X_NAME, column_y, center=True, bold=True)
-
-        for i, (rank, score, name) in enumerate(leaderboard):
-            row_y = row_y_start + i * ROW_SPACING
-            render_text(rank, FONT_SIZE_CREDITS, WHITE,
-                        X_RANK, row_y, center=True)
-            render_text(score, FONT_SIZE_CREDITS,
-                        WHITE, X_SCORE, row_y, center=True)
-            render_text(name, FONT_SIZE_CREDITS, WHITE,
-                        X_NAME, row_y, center=True)
+        # Allows scoreboard to display
+        if input_active:
+            scoreboard.draw_scoreboard_initials(screen, player_initials)
+        else:
+            scoreboard.draw_scoreboard(screen, SCREEN_WIDTH)
 
         # Retry and Quit text at the bottom
         BOTTOM_Y = SCREEN_HEIGHT - BORDER_MARGIN - 30
-
         render_text("RETRY (R)", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 4, BOTTOM_Y, bold=True)
         render_text("QUIT (Q)", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH * 3 // 4, BOTTOM_Y, bold=True)
+
 
     pygame.display.flip()
     clock.tick(FPS)
