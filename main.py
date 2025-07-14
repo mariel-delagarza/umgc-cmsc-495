@@ -5,8 +5,8 @@ from paddle import Paddle  # Import the Paddle class
 from ball import Ball  # Import the Ball class
 # Import the Bricks class
 from bricks import create_brick_grid, handle_ball_brick_collision
-from scoreboard import Scoreboard # Import the scoreboard class
-from SoundManager import SoundManager
+from scoreboard import Scoreboard  # Import the scoreboard class
+from assets.SoundManager import SoundManager
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -65,9 +65,11 @@ paddle = Paddle(SCREEN_WIDTH, SCREEN_HEIGHT, BLUE,
                 BORDER_MARGIN, BORDER_THICKNESS)
 
 # Instantiate scoreboard
-scoreboard = Scoreboard(SCREEN_WIDTH,SCREEN_HEIGHT)
+scoreboard = Scoreboard(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # Font helper
+
+
 def render_text(text, size, color, x, y, center=True, bold=False):
     """Render text on the screen with optional centering and bold styling."""
     font_path = (
@@ -82,6 +84,7 @@ def render_text(text, size, color, x, y, center=True, bold=False):
     else:
         rect.topleft = (x, y)
     screen.blit(rendered, rect)
+
 
 # Ball creation
 game_ball = Ball(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -106,9 +109,9 @@ while running:
         # This is placed here to prevent p & q from messing with initials
         if input_active and current_state == GAME_OVER:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE: # Backspace to remove letter
+                if event.key == pygame.K_BACKSPACE:  # Backspace to remove letter
                     player_initials = player_initials[:-1]
-                elif event.unicode.isalpha() and len(player_initials) < 3: # Allow typing of letters
+                elif event.unicode.isalpha() and len(player_initials) < 3:  # Allow typing of letters
                     player_initials += event.unicode.upper()
                     initials_ready = len(player_initials) == 3
                     # Automatically save when length reaches 3
@@ -116,7 +119,7 @@ while running:
                         scoreboard.save_score(score, player_initials)
                         input_active = False
                         initials_entered = True
-            continue # Needed to allow for Q and R to work
+            continue  # Needed to allow for Q and R to work
 
         # Change state on key press
         if event.type == pygame.KEYDOWN:
@@ -248,11 +251,13 @@ while running:
             game_ball.bounce_paddle(paddle.rect, paddle, sound)
 
             # Check if the ball hit any bricks
-            score = handle_ball_brick_collision(game_ball, brick_group, score, sound)
+            score = handle_ball_brick_collision(
+                game_ball, brick_group, score, sound)
 
             # Life update
             if game_ball.bottom_hit:
-                sound.play_sound("floor_hit")  # Sound when ball hits the bottom
+                # Sound when ball hits the bottom
+                sound.play_sound("floor_hit")
                 sound.play_sound("life_lost")  # Sound when a life is lost
                 lives -= 1
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -314,7 +319,6 @@ while running:
                     SCREEN_WIDTH // 4, BOTTOM_Y, bold=True)
         render_text("QUIT (Q)", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH * 3 // 4, BOTTOM_Y, bold=True)
-
 
     pygame.display.flip()
     clock.tick(FPS)

@@ -5,6 +5,7 @@ import wave
 import numpy as np
 import os
 
+
 def create_dummy_wav(file_path, duration_seconds=0.25, sample_rate=44100, frequency=440):
 
     n_samples = int(sample_rate * duration_seconds)
@@ -17,6 +18,7 @@ def create_dummy_wav(file_path, duration_seconds=0.25, sample_rate=44100, freque
         wf.setsampwidth(2)
         wf.setframerate(sample_rate)
         wf.writeframes(audio.tobytes())
+
 
 # Folder setup
 os.makedirs("assets/sounds", exist_ok=True)
@@ -39,4 +41,5 @@ for name, freq in sound_map.items():
     create_dummy_wav(path, frequency=freq)
 
 # looping background tone
-create_dummy_wav("assets/music/background.wav", duration_seconds=3.0, frequency=260)
+create_dummy_wav("assets/music/background.wav",
+                 duration_seconds=3.0, frequency=260)
