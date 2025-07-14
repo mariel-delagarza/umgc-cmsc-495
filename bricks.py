@@ -108,17 +108,20 @@ def create_brick_grid(screen_width, rows_per_color=2):
     return bricks  # Return the full group of bricks
 
 # This function checks if the ball hit any bricks
-def handle_ball_brick_collision(ball, bricks, score):
+def handle_ball_brick_collision(ball, brick_group, score, sound):
     """Checks for collisions between the ball and bricks and updates the score."""
 
     # Check if the ball's rectangle overlaps any bricks
-    hit_bricks = pygame.sprite.spritecollide(ball, bricks, dokill=False)
+    hit_bricks = pygame.sprite.spritecollide(ball, brick_group, dokill=False)
 
     # For every brick the ball hits: reverse ball's vertical direction and add points for the brick
     for brick in hit_bricks:
         if not brick.hit_flag:
             ball.speed_y *= -1
             score += brick.score
+
+            # Play brick collision sound
+            sound.play_sound("brick_hit")
 
             # Brick effects
             brick.flash_timer = 5

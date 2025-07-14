@@ -102,7 +102,8 @@ class Ball:
             screen_height,
             border_margin,
             border_thickness,
-            padding_top):
+            padding_top,
+            sound):
         """
         Handle collision with screen walls and reverse direction as needed.
 
@@ -123,12 +124,14 @@ class Ball:
         # Collision checking
         if self.x - self.radius <= left_bound or self.x + self.radius >= right_bound:
             self.speed_x *= -1
+            sound.play_sound("wall_hit")
         if self.y - self.radius <= top_bound:
             self.speed_y *= -1
+            sound.play_sound("wall_hit")
         if self.y + self.radius >= bottom_bound:
             self.bottom_hit = True
 
-    def bounce_paddle(self, paddle_rect, paddle_hop):
+    def bounce_paddle(self, paddle_rect, paddle_hop, sound):
         """
         Bounce off the paddle, reversing vertical direction and
         tweaking horizontal based on hit location.
@@ -137,7 +140,9 @@ class Ball:
             paddle_rect (pygame.Rect): Rect of the paddle to check for collision.
             paddle_hop (paddle_hop.start_shake)
         """
+
         if self.rect.colliderect(paddle_rect):
+            sound.play_sound("paddle_hit")
             # Calculate the hit position on the paddle
             ball_center = self.x
             paddle_center = paddle_rect.centerx
