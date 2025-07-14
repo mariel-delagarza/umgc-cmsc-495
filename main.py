@@ -6,7 +6,7 @@ from ball import Ball  # Import the Ball class
 # Import the Bricks class
 from bricks import create_brick_grid, handle_ball_brick_collision
 from scoreboard import Scoreboard  # Import the scoreboard class
-from assets.SoundManager import SoundManager
+from assets.sound_manager import SoundManager
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
