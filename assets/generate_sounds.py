@@ -2,8 +2,8 @@
 """Generate custom sine wave .wav files for Breakout game sound effects."""
 
 import wave
-import numpy as np
 import os
+import numpy as np
 
 
 def create_dummy_wav(file_path, duration_seconds=0.25, sample_rate=44100, frequency=440):
