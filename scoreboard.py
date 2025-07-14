@@ -4,6 +4,7 @@ Handles rendering, sorting and saving to scoreboard.txt"""
 import os
 import pygame
 
+
 class Scoreboard:
     """
     Scoreboard tracks top ten scores in a seperate text file and allows players to add initials if
@@ -27,16 +28,15 @@ class Scoreboard:
         self.rank = self.x - 80
         self.score = self.x
         self.name = self.x + 100
-        self.underline_y = 80
+        self.underline_y = 120
         self.row_y = self.underline_y + 80
         # Text manipulation
         self.size_subtitle = 48
         self.size_row = 30
         self.font_bold = "assets/fonts/ChakraPetch-Bold.ttf"
         self.font_path = "assets/fonts/ChakraPetch-Regular.ttf"
-        self.max_entries = 10
+        self.max_entries = 5
         self.scoreboard_file = "scoreboard.txt"
-
 
     def render_text(self, screen, text, size, color, x, y, center=True, bold=False):
         """Render text on the screen with optional centering and bold styling."""
@@ -57,7 +57,7 @@ class Scoreboard:
         scores = [s for s, n in self.load_scoreboard()]
         if len(scores) < self.max_entries:
             return True
-        return score >= scores[-1] # Allows player to win ties
+        return score >= scores[-1]  # Allows player to win ties
 
     def load_scoreboard(self):
         """
@@ -105,11 +105,16 @@ class Scoreboard:
                                                              self.load_scoreboard()]
 
         # Sort by score descending, stable sort keeps new entry order at top if scores equal
-        temp_entries = sorted(temp_entries, key=lambda x: -x[0])[:self.max_entries]
+        temp_entries = sorted(
+            temp_entries, key=lambda x: -x[0])[:self.max_entries]
 
         # Subtitle SCOREBOARD
         self.render_text(screen, "SCOREBOARD", self.size_subtitle, self.white,
-                         self.x, self.underline_y + 30, bold=False)
+                         self.x, self.underline_y, bold=False)
+
+        # Show instructions
+        self.render_text(screen, "ENTER YOUR INITIALS", self.size_row, self.white,
+                         self.x, self.underline_y + 35, bold=False)
 
         # Loop top entries and render each row
         for index, (s, n, is_new) in enumerate(temp_entries):
@@ -120,9 +125,12 @@ class Scoreboard:
             row_color = self.green if is_new else self.white
 
             # Render rank, score and name for each row
-            self.render_text(screen, rank_str, self.size_row, row_color, self.rank, row_y)
-            self.render_text(screen, str(s), self.size_row, row_color, self.score, row_y)
-            self.render_text(screen, n, self.size_row, row_color, self.name, row_y)
+            self.render_text(screen, rank_str, self.size_row,
+                             row_color, self.rank, row_y)
+            self.render_text(screen, str(s), self.size_row,
+                             row_color, self.score, row_y)
+            self.render_text(screen, n, self.size_row,
+                             row_color, self.name, row_y)
 
     def draw_scoreboard(self, screen, screen_width):
         """
@@ -141,9 +149,12 @@ class Scoreboard:
             row_y = self.row_y + index * self.row_spacing
 
             # Render rank, score, and name for each row
-            self.render_text(screen, rank_str, self.size_row, self.white, self.rank, row_y)
-            self.render_text(screen, str(score), self.size_row, self.white, self.score, row_y)
-            self.render_text(screen, name, self.size_row, self.white, self.name, row_y)
+            self.render_text(screen, rank_str, self.size_row,
+                             self.white, self.rank, row_y)
+            self.render_text(screen, str(score), self.size_row,
+                             self.white, self.score, row_y)
+            self.render_text(screen, name, self.size_row,
+                             self.white, self.name, row_y)
 
     def save_score(self, score, name):
         """
