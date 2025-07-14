@@ -6,6 +6,7 @@ from ball import Ball  # Import the Ball class
 # Import the Bricks class
 from bricks import create_brick_grid, handle_ball_brick_collision
 from scoreboard import Scoreboard # Import the scoreboard class
+from SoundManager import SoundManager
 
 # disable "pygame has no member" errors - it's a linter issue not a pygame issue.
 # disable "invalid-name" - the actual constants are all uppercase as per PEP 8:
@@ -21,6 +22,11 @@ SCREEN_HEIGHT = 600
 FPS = 60
 BORDER_MARGIN = 25  # Margin for the white border around the game area
 BORDER_THICKNESS = 4  # Thickness of the white border
+
+# Creates and initializes the SoundManager
+sound = SoundManager()
+sound.play_sound("startup")
+sound.play_music()
 
 # Colors
 WHITE = (255, 255, 255)  # for the text and ball
@@ -124,6 +130,7 @@ while running:
                 ball_active = True
             elif event.key == pygame.K_SPACE:
                 if current_state == WELCOME:
+                    sound.play_sound("startup")
                     current_state = GAMEPLAY
                     game_ball.draw(screen)
                     ball_active = True  # start moving on gameplay load
@@ -237,14 +244,16 @@ while running:
         if current_state == GAMEPLAY and not paused and ball_active:
             game_ball.move()
             game_ball.bounce_walls(
-                SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE)
-            game_ball.bounce_paddle(paddle.rect, paddle)
+                SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE, sound)
+            game_ball.bounce_paddle(paddle.rect, paddle, sound)
 
             # Check if the ball hit any bricks
-            score = handle_ball_brick_collision(game_ball, brick_group, score)
+            score = handle_ball_brick_collision(game_ball, brick_group, score, sound)
 
             # Life update
             if game_ball.bottom_hit:
+                sound.play_sound("floor_hit")  # Sound when ball hits the bottom
+                sound.play_sound("life_lost")  # Sound when a life is lost
                 lives -= 1
                 game_ball.restart(SCREEN_WIDTH, SCREEN_HEIGHT)
                 game_ball.bottom_hit = False
@@ -252,6 +261,8 @@ while running:
                     current_state = LIFE_LOST
                     paused = False  # don't move until user resumes
                 elif lives <= 0:
+                    sound.play_sound("game_over")
+                    sound.stop_music()
                     current_state = GAME_OVER
                     initials_entered = False
                     player_initials = ""
