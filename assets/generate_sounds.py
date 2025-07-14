@@ -7,6 +7,18 @@ import numpy as np
 
 
 def create_dummy_wav(file_path, duration_seconds=0.25, sample_rate=44100, frequency=440):
+    """
+    Generate a mono sine wave and save it as a .wav file.
+
+    Parameters:
+        file_path (str): Output path for the .wav file.
+        duration_seconds (float): Length of the sound in seconds. Default is 0.25 seconds.
+        sample_rate (int): Number of samples per second (Hz). Default is 44100 Hz.
+        frequency (int): Frequency of the sine wave in Hz. Default is 440 Hz (A4 note).
+
+    This function creates a simple tone using NumPy and writes it to a WAV file
+    using Python's built-in wave module. The output is a 16-bit PCM mono file.
+    """
 
     n_samples = int(sample_rate * duration_seconds)
     t = np.linspace(0, duration_seconds, n_samples, False)
@@ -14,10 +26,10 @@ def create_dummy_wav(file_path, duration_seconds=0.25, sample_rate=44100, freque
     audio = (audio * 32767).astype(np.int16)
 
     with wave.open(file_path, 'w') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(sample_rate)
-        wf.writeframes(audio.tobytes())
+        wf.setnchannels(1)  # pylint: disable=no-member
+        wf.setsampwidth(2)  # pylint: disable=no-member
+        wf.setframerate(sample_rate)  # pylint: disable=no-member
+        wf.writeframes(audio.tobytes())  # pylint: disable=no-member
 
 
 # Folder setup
