@@ -95,6 +95,10 @@ brick_group = create_brick_grid(SCREEN_WIDTH)
 # Initialize score variable
 score = 0
 lives = 3
+bonus_message = ""
+bonus_timer = 0
+# Duration in milliseconds 1500 milliseconds = 1.5 seconds
+BONUS_DISPLAY_DURATION = 1500
 
 # Main loop
 clock = pygame.time.Clock()  # Initialize the clock for FPS control
@@ -239,6 +243,15 @@ while running:
         render_text(f"SCORE: {score}", FONT_SIZE_SCORE, WHITE, RIGHT_X,
                     PADDING_TOP + 20, center=False, bold=True)
 
+        # Show bonus message to the left of SCORE for 1.5 seconds
+        current_time = pygame.time.get_ticks()
+        if bonus_message and current_time - bonus_timer < BONUS_DISPLAY_DURATION:
+            bonus_x = RIGHT_X - 140  # adjust spacing as needed
+            render_text(bonus_message, FONT_SIZE_SCORE, WHITE,
+                        bonus_x, PADDING_TOP + 20, center=False, bold=True)
+        else:
+            bonus_message = ""
+
         # Horizontal underline (2px height)
         UNDERLNE_Y = PADDING_TOP + 45
         pygame.draw.line(screen, WHITE, (30, UNDERLNE_Y),
@@ -248,7 +261,18 @@ while running:
             game_ball.move()
             game_ball.bounce_walls(
                 SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_MARGIN, BORDER_THICKNESS, PADDING_SIDE, sound)
-            game_ball.bounce_paddle(paddle.rect, paddle, sound)
+            if game_ball.rect.colliderect(paddle.rect):
+                game_ball.bounce_paddle(paddle.rect, paddle, sound)
+
+                # Bonus logic: award bonus if 3 or more bricks are hit before paddle
+                if game_ball.bricks_hit_in_rally >= 3:
+                    bonus = 100 + 50 * (game_ball.bricks_hit_in_rally - 3)
+                    score += bonus
+                    bonus_message = f"Bonus! +{bonus}"
+                    bonus_timer = pygame.time.get_ticks()
+
+                # Reset the rally count
+                game_ball.bricks_hit_in_rally = 0
 
             # Check if the ball hit any bricks
             score = handle_ball_brick_collision(
