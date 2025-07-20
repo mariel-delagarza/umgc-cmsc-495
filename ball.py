@@ -48,6 +48,9 @@ class Ball:
         # Create a rectangle used for collision detection
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
+        # Track how many bricks are hit before ball returns to paddle
+        self.bricks_hit_in_rally = 0
+
     # For drawing loop
     def draw(self, screen):
         """

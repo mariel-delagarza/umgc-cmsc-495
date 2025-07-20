@@ -119,6 +119,7 @@ def handle_ball_brick_collision(ball, brick_group, score, sound):
         if not brick.hit_flag:
             ball.speed_y *= -1
             score += brick.score
+            ball.bricks_hit_in_rally += 1
 
             # Play brick collision sound
             sound.play_sound("brick_hit")
