@@ -69,6 +69,9 @@ class Brick(pygame.sprite.Sprite):
             particle["life"] -= 1
             if particle["life"] <= 0:
                 self.particles.remove(particle)
+        if self.hit_flag and self.flash_timer <= 0 and self.shake_timer <= 0:
+            if not self.particles:
+                self.kill()
 
     def draw_particles(self, surface):
         """Draws particles for brick hits."""
@@ -139,5 +142,6 @@ def handle_ball_brick_collision(ball, brick_group, score, sound):
                     "life": 10,
                     "color": brick.color
                 })
+            #brick.kill()
 
     return score
