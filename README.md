@@ -23,7 +23,12 @@ Red bricks are worth 5 points, yellow bricks are worth 3 points, green bricks ar
   - Use left and right arrow keys to move paddle left and right.
 - When game ends:
   - Press `R` to restart (after restarting, instructions will display to press `SPACE` to begin gameplay and `P` to pause/unpause).
-  - Press `Q` to quit and close the program.  
+  - Press `Q` to quit and close the program.
+  
+### Hard Mode
+- At the welcome screen, press 'H' to enable hard mode.
+- Press 'SPACE' to start.
+- The game will load with 1 life instead of 3.
 
 ## To contribute
 - Create a branch with a clear name. For example:
@@ -31,4 +36,3 @@ Red bricks are worth 5 points, yellow bricks are worth 3 points, green bricks ar
   - feat/new-feature-name
   - bug/bug-name
 - Create a pull request and assign any group member(s) to review
-- Contributions should adhere to the styleguide in `styleguide.md`
