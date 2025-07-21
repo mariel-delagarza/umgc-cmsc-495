@@ -143,12 +143,13 @@ while running:
                     current_state = GAMEPLAY
                     game_ball.draw(screen)
                     ball_active = True  # start moving on gameplay load
+                    lives = 1 if hardmode else 3
                 elif current_state == GAMEPLAY:
-                    ball_active = True            
+                    ball_active = True
             # Restart during Game Over
             elif event.key == pygame.K_r and current_state == GAME_OVER:
                 score = 0
-                lives = 3
+                lives = 1 if hardmode else 3
                 paused = False  # no longer paused
                 ball_active = False  # wait for user to start
                 initials_entered = False
@@ -177,14 +178,9 @@ while running:
 
     # Render based on paused status
     if current_state == GAMEPLAY:
-        # Set lives
-        if hardmode:
-            lives = 1
-        else:
-            lives = 3
         if not ball_active and current_level == 1:
             render_text("PRESS SPACE TO START", FONT_SIZE_TITLE, WHITE,
-                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2-40, bold=True)                        
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2-40, bold=True)
             render_text("PRESS 'P' TO PAUSE/UNPAUSE", FONT_SIZE_SUBTITLE, WHITE,
                         SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         elif paused:
@@ -206,9 +202,9 @@ while running:
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 60, bold=True)
         # Subtitle
         render_text("Press SPACE to Start", FONT_SIZE_SUBTITLE, WHITE,
-                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20)      
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 20)
         render_text("Press 'H' to Enable Hardmode", FONT_SIZE_SUBTITLE, WHITE,
-                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 19)  
+                    SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 19)
         render_text("Press 'P' to Pause/Unpause", FONT_SIZE_SUBTITLE, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 2)
         # Credits
@@ -222,13 +218,13 @@ while running:
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120)
         render_text("and Megan Weatherbee", FONT_SIZE_CREDITS, WHITE,
                     SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 140)
-        # Let the User know what mode is enabled. 
+        # Let the User know what mode is enabled.
         if hardmode:
             render_text("HARDMODE ENABLED", FONT_SIZE_SUBTITLE, RED,
-                SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 120, bold=True)
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 120, bold=True)
         else:
             render_text("Normal Mode", FONT_SIZE_SUBTITLE, WHITE,
-                SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 120 , bold=True)
+                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 120, bold=True)
 
     elif current_state in (GAMEPLAY, LIFE_LOST):
         # White border
@@ -294,7 +290,6 @@ while running:
             # Check if the ball hit any bricks
             score = handle_ball_brick_collision(
                 game_ball, brick_group, score, sound)
-            
 
             # Life update
             if game_ball.bottom_hit:
@@ -319,13 +314,14 @@ while running:
                         scoreboard.new_initials(score)
                         input_active = True
                     else:
-                        input_active = False            
+                        input_active = False
             # All of the resets for completing a level
             if len(brick_group) == 0:
-                render_text(f"Level {current_level} Complete!", FONT_SIZE_TITLE, WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)                
+                render_text(f"Level {current_level} Complete!", FONT_SIZE_TITLE,
+                            WHITE, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
                 pygame.display.flip()
-                pygame.time.delay(2000)                
-                current_level += 1                
+                pygame.time.delay(2000)
+                current_level += 1
                 game_ball.speed_x *= 1.1
                 game_ball.speed_y *= 1.1
                 brick_group.empty()
